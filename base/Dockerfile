@@ -3,6 +3,8 @@ WORKDIR /tmp
 
 ENV SPARK_VERSION 2.3.1
 ENV SPARK_BINARY_TARBALL spark-${SPARK_VERSION}-bin-hadoop2.7.tgz
+ENV SPARK_CASSANDRA_CONNECTOR_VERSION 2.3.1
+ENV POSTGRESQL_DRIVER_VERSION 42.2.4
 
 COPY mirrors /tmp/
 COPY KEYS /tmp/
@@ -20,6 +22,13 @@ RUN apt-get update \
   && cmp /tmp/${SPARK_BINARY_TARBALL}.sha512 ${SPARK_BINARY_TARBALL}.sha512 \
   && tar xvzf ${SPARK_BINARY_TARBALL} --exclude=**/data --exclude=**/examples --exclude=**/kubernetes --exclude=**/R --exclude=*.cmd -C /opt \
   && ln -s /opt/spark-${SPARK_VERSION}-bin-hadoop2.7 /opt/spark \
+  && cd /opt/spark/jars \
+  && export SPARK_CASSANDRA_CONNECTOR_JAR_URL=http://central.maven.org/maven2/com/datastax/spark/spark-cassandra-connector_2.11/${SPARK_CASSANDRA_CONNECTOR_VERSION}/spark-cassandra-connector_2.11-${SPARK_CASSANDRA_CONNECTOR_VERSION}.jar \
+  && echo "Downloading from ${SPARK_CASSANDRA_CONNECTOR_JAR_URL}" \
+  && curl -#O ${SPARK_CASSANDRA_CONNECTOR_JAR_URL} \
+  && export POSTGRESQL_DRIVER_JAR_URL=http://central.maven.org/maven2/org/postgresql/postgresql/${POSTGRESQL_DRIVER_VERSION}/postgresql-${POSTGRESQL_DRIVER_VERSION}.jar \
+  && echo "Downloading from ${POSTGRESQL_DRIVER_JAR_URL}" \
+  && curl -#O ${POSTGRESQL_DRIVER_JAR_URL} \
   && rm /tmp/${SPARK_BINARY_TARBALL}* \
   && apt-get purge --auto-remove -y curl gnupg \
   && apt-get autoclean
