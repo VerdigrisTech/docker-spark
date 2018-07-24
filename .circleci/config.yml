@@ -22,6 +22,10 @@ jobs:
           name: Build Docker container
           command: docker build --build-arg SPARK_VERSION=$SPARK_VERSION -t verdigristech/spark:$SPARK_VERSION base
 
+      - run:
+          name: Saving image to a tar archive
+          command: docker save -o spark-base_${SPARK_VERSION}.tar verdigristech/spark:$SPARK_VERSION
+
 workflows:
   version: 2
   build_and_deploy:
