@@ -1,9 +1,11 @@
 FROM openjdk:8u171-jdk-slim-stretch
 WORKDIR /tmp
 
-ENV SPARK_VERSION 2.3.1
+ARG SPARK_VERSION=2.3.1
+ENV SPARK_VERSION=${SPARK_VERSION}
 ENV SPARK_BINARY_TARBALL spark-${SPARK_VERSION}-bin-hadoop2.7.tgz
 ENV SPARK_CASSANDRA_CONNECTOR_VERSION 2.3.1
+ENV PYSPARK_CASSANDRA_JAR_VERSION 0.9.0
 ENV POSTGRESQL_DRIVER_VERSION 42.2.4
 
 COPY mirrors /tmp/
@@ -26,6 +28,9 @@ RUN apt-get update \
   && export SPARK_CASSANDRA_CONNECTOR_JAR_URL=http://central.maven.org/maven2/com/datastax/spark/spark-cassandra-connector_2.11/${SPARK_CASSANDRA_CONNECTOR_VERSION}/spark-cassandra-connector_2.11-${SPARK_CASSANDRA_CONNECTOR_VERSION}.jar \
   && echo "Downloading from ${SPARK_CASSANDRA_CONNECTOR_JAR_URL}" \
   && curl -#O ${SPARK_CASSANDRA_CONNECTOR_JAR_URL} \
+  && export PYSPARK_CASSANDRA_JAR_URL=https://dl.bintray.com/spark-packages/maven/anguenot/pyspark-cassandra/${PYSPARK_CASSANDRA_JAR_VERSION}/pyspark-cassandra-${PYSPARK_CASSANDRA_JAR_VERSION}.jar \
+  && echo "Downloading from ${PYSPARK_CASSANDRA_JAR_URL}" \
+  && curl -#O ${PYSPARK_CASSANDRA_JAR_URL} \
   && export POSTGRESQL_DRIVER_JAR_URL=http://central.maven.org/maven2/org/postgresql/postgresql/${POSTGRESQL_DRIVER_VERSION}/postgresql-${POSTGRESQL_DRIVER_VERSION}.jar \
   && echo "Downloading from ${POSTGRESQL_DRIVER_JAR_URL}" \
   && curl -#O ${POSTGRESQL_DRIVER_JAR_URL} \
