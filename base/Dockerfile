@@ -42,7 +42,7 @@ RUN export PATH=$PATH:/opt/spark/bin
 
 ENV PY4J_VERSION 0.10.7
 ENV SPARK_HOME /opt/spark
-ENV PYTHONPATH ${SPARK_HOME}/python:${SPARK_HOME}/python/lib/py4j-${PY4J_VERSION}-src.zip:$PYTHONPATH
+ENV PYTHONPATH ${SPARK_HOME}/python:${SPARK_HOME}/python/lib/py4j-${PY4J_VERSION}-src.zip:${SPARK_HOME}/jars/pyspark-cassandra-${PYSPARK_CASSANDRA_JAR_VERSION}.jar:$PYTHONPATH
 ENV PATH $PATH:/opt/spark/bin:/opt/spark/sbin
 
 WORKDIR /app
