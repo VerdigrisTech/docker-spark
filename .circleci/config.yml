@@ -1,0 +1,30 @@
+version: 2
+jobs:
+  build_base:
+    docker:
+      - image: circleci/builder-base
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PASS
+
+    working_directory: ~/docker-spark
+
+    steps:
+      - setup_remote_docker
+      - checkout
+      - run:
+          name: Set build-time environment variables
+          command: |
+            set -x
+            SPARK_VERSION=$(cat base/version)
+            echo "export SPARK_VERSION=$SPARK_VERSION" >> $BASH_ENV
+      - run:
+          name: Build Docker container
+          command: docker build --build-arg SPARK_VERSION=$SPARK_VERSION -t verdigristech/spark:$SPARK_VERSION base
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build_base:
+          context: common
