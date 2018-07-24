@@ -26,6 +26,10 @@ jobs:
           name: Saving image to a tar archive
           command: docker save -o spark-base_${SPARK_VERSION}.tar verdigristech/spark:$SPARK_VERSION
 
+      - store_artifacts:
+          path: ~/docker-spark/spark-base_${SPARK_VERSION}.tar
+          destination: /out/images/spark-base_${SPARK_VERSION}.tar
+
 workflows:
   version: 2
   build_and_deploy:
