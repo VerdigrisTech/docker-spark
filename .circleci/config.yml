@@ -21,11 +21,16 @@ jobs:
       - run:
           name: Build Docker container
           command: docker build --build-arg SPARK_VERSION=$SPARK_VERSION -t verdigristech/spark:$SPARK_VERSION base
-
       - run:
           name: Saving image to a tar archive
           command: docker save -o spark-base.tar verdigristech/spark:$SPARK_VERSION
-
+      - run:
+          name: Save latest build number
+          command: echo $CIRCLE_BUILD_NUM > spark-base-build-num
+      - save_cache:
+          key: v1-docker-spark-base-{{ .Revision }}-{{ .Branch }}
+          paths:
+            - spark-base-build-num
       - store_artifacts:
           path: ~/docker-spark/spark-base.tar
           destination: /out/images/spark-base.tar
@@ -41,13 +46,19 @@ jobs:
 
     steps:
       - setup_remote_docker
+      - restore_cache:
+          keys:
+            - v1-docker-spark-base-{{ .Revision }}-{{ .Branch }}
+            - v1-docker-spark-base-{{ .Revision }}
+            - v1-docker-spark-base
       - run:
           name: Install curl
           command: apt-get update && apt-get install -y curl
       - run:
           name: Download build artifacts
           command: |
-            curl https://circleci.com/api/v1.1/project/github/VerdigrisTech/docker-spark/${CIRCLE_BUILD_NUM}/artifacts?circle-token=${CIRCLE_TOKEN} | grep -o 'https://[^"]*' > artifacts.txt
+            export SPARK_BASE_BUILD_NUM=$(cat spark-base-build-num)
+            curl https://circleci.com/api/v1.1/project/github/VerdigrisTech/docker-spark/${SPARK_BASE_BUILD_NUM}/artifacts?circle-token=${CIRCLE_TOKEN} | grep -o 'https://[^"]*' > artifacts.txt
             <artifacts.txt xargs -P4 -I % curl -O %
       - run:
           name: Restore Docker images
