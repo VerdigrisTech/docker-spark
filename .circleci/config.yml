@@ -30,7 +30,7 @@ jobs:
       - save_cache:
           key: v1-docker-spark-base-{{ .Revision }}-{{ .Branch }}
           paths:
-            - spark-base-build-nu
+            - spark-base-build-num
       - store_artifacts:
           path: ~/docker-spark/spark-base.tar
           destination: /out/images/spark-base.tar
