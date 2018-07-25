@@ -30,7 +30,7 @@ jobs:
       - save_cache:
           key: v1-docker-spark-base-{{ .Revision }}-{{ .Branch }}
           paths:
-            - spark-base-build-num
+            - spark-base-build-nu
       - store_artifacts:
           path: ~/docker-spark/spark-base.tar
           destination: /out/images/spark-base.tar
@@ -64,6 +64,9 @@ jobs:
           name: Restore Docker images
           command: |
             ls -1 *.tar | xargs -P4 -I % docker load -i %
+      - run:
+          name: Push image to Docker Hub
+          command: docker images verdigristech/* --filter "dangling=false" --format "{{.Repository}}:{{.Tag}}" | xargs -P4 -I % docker push %
 
 workflows:
   version: 2
