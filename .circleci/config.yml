@@ -58,8 +58,8 @@ jobs:
           name: Download build artifacts
           command: |
             export SPARK_BASE_BUILD_NUM=$(cat spark-base-build-num)
-            curl https://circleci.com/api/v1.1/project/github/VerdigrisTech/docker-spark/${SPARK_BASE_BUILD_NUM}/artifacts?circle-token=${CIRCLE_TOKEN} | grep -o 'https://[^"]*' > artifacts.txt
-            <artifacts.txt xargs -P4 -I % curl -O %
+            curl -# https://circleci.com/api/v1.1/project/github/VerdigrisTech/docker-spark/${SPARK_BASE_BUILD_NUM}/artifacts?circle-token=${CIRCLE_TOKEN} | grep -o 'https://[^"]*' > artifacts.txt
+            <artifacts.txt xargs -P4 -I % curl -#O %
       - run:
           name: Restore Docker images
           command: |
