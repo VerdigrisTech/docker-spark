@@ -37,7 +37,7 @@ jobs:
 
   deploy:
     docker:
-      - image: debian:stretch-slim
+      - image: circleci/builder-base
         auth:
           username: $DOCKER_USER
           password: $DOCKER_PASS
