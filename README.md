@@ -10,13 +10,19 @@ The simplest way to get started with Spark is to run the image directly as
 container. You will need to mount the directory which contains your Spark
 application to get started.
 
+### Submitting applications
+
 ```console
-docker run -v .:/app -it verdigristech/spark:2.3.1 spark-submit MySparkApp.jar
+docker run -v .:/app -it verdigristech/spark:2.3.1 spark-submit --class com.example.app.EntryPointClass MySparkApp.jar
 ```
 
 This will spin up the container and automatically run your Spark application as
 `local[*]` master. Please note that the default working directory for the image
 is `/app`.
+
+You may pass in all of the standard `spark-submit` arguments. For more
+information, refer to the official Spark documentation on
+[Submitting Applications](https://spark.apache.org/docs/latest/submitting-applications.html).
 
 ### Pyspark
 
