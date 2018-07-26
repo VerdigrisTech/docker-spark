@@ -50,3 +50,19 @@ Using Python version 2.7.13 (default, Nov 24 2017 17:33:09)
 SparkSession available as 'spark'.
 >>>
 ```
+
+-----
+
+© 2018 [Verdigris Technologies, Inc](https://verdigris.co). All rights reserved.
+
+<sub>
+Verdigris, Verdigris Technologies, VerdigrisTech, and the Verdigris logo are
+registered trademarks or trademarks of Verdigris Technologies, Inc. in the
+United States and other countries. Apache Spark, Spark, Apache, the Apache
+feather logo, and the Apache Spark project logo are either registered
+trademarks or trademarks of The Apache Software Foundation in the United States
+and other countries. Docker, the Docker “Moby Dock” whale logo, Dockerfile are
+registered trademarks of Docker, Inc. in the United States and other countries.
+All other marks mentioned may be trademarks or registered trademarks of their
+respective owners.
+</sub>
