@@ -1,5 +1,7 @@
 # ![docker-spark](https://s3-us-west-2.amazonaws.com/verdigris/spark-docker.svg)
 
+[![Build Status](https://img.shields.io/circleci/token/f41a8ea8d8fe8a47d6d409f60f53230c8c21ff67/project/VerdigrisTech/docker-spark.svg)](https://circleci.com/gh/VerdigrisTech/docker-spark)
+
 Containers that contain prebuilt Apache Spark framework.
 
 ## Usage
