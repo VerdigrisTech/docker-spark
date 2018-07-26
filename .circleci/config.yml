@@ -10,7 +10,8 @@ jobs:
     working_directory: ~/docker-spark
 
     steps:
-      - setup_remote_docker
+      - setup_remote_docker:
+          docker_layer_caching: true
       - checkout
       - run:
           name: Set build-time environment variables
@@ -45,7 +46,8 @@ jobs:
     working_directory: ~/docker-spark
 
     steps:
-      - setup_remote_docker
+      - setup_remote_docker:
+          docker_layer_caching: true
       - run:
           name: Install curl
           command: apt-get update && apt-get install -y curl
