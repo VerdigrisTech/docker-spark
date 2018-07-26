@@ -59,6 +59,15 @@ SparkSession available as 'spark'.
 >>>
 ```
 
+#### Setting Python version
+
+By default, Pyspark uses Python 2.7. You may override the default version by
+changing `PYSPARK_PYTHON` environment variable to `/usr/local/bin/python3.6`:
+
+```console
+docker run --rm -e "PYSPARK_PYTHON=/usr/local/bin/python3.6" -it verdigristech/spark:2.3.1 pyspark
+```
+
 -----
 
 © 2018 [Verdigris Technologies, Inc](https://verdigris.co). All rights reserved.
