@@ -36,6 +36,39 @@ jobs:
           path: ~/docker-spark/spark-base.tar
           destination: /out/images/spark-base.tar
 
+  build_master:
+    docker:
+      - image: circleci/builder-base
+
+    working_directory: ~/docker-spark
+
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - checkout
+      - run:
+          name: Set build-time environment variables
+          command: |
+            set -x
+            SPARK_VERSION=$(cat base/version)
+            echo "export SPARK_VERSION=$SPARK_VERSION" >> $BASH_ENV
+      - run:
+          name: Build Docker container
+          command: docker build -t verdigristech/spark:master-$SPARK_VERSION master
+      - run:
+          name: Saving image to a tar archive
+          command: docker save -o spark-master.tar verdigristech/spark:master-$SPARK_VERSION
+      - run:
+          name: Save latest build number
+          command: echo $CIRCLE_BUILD_NUM > spark-master-build-num
+      - save_cache:
+          key: v1-docker-spark-master-{{ .Revision }}-{{ .Branch }}
+          paths:
+            - spark-master-build-num
+      - store_artifacts:
+          path: ~/docker-spark/spark-master.tar
+          destination: /out/images/spark-master.tar
+
   deploy:
     docker:
       - image: circleci/builder-base
@@ -78,7 +111,11 @@ workflows:
     jobs:
       - build_base:
           context: common
-      - deploy:
+      - build_master:
           context: common
           requires:
             - build_base
+      - deploy:
+          context: common
+          requires:
+            - build_master
