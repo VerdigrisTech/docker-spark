@@ -69,6 +69,39 @@ jobs:
           path: ~/docker-spark/spark-master.tar
           destination: /out/images/spark-master.tar
 
+  build_worker:
+    docker:
+      - image: circleci/builder-base
+
+    working_directory: ~/docker-spark
+
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - checkout
+      - run:
+          name: Set build-time environment variables
+          command: |
+            set -x
+            SPARK_VERSION=$(cat base/version)
+            echo "export SPARK_VERSION=$SPARK_VERSION" >> $BASH_ENV
+      - run:
+          name: Build Docker container
+          command: docker build -t verdigristech/spark:worker-$SPARK_VERSION worker
+      - run:
+          name: Saving image to a tar archive
+          command: docker save -o spark-worker.tar verdigristech/spark:worker-$SPARK_VERSION
+      - run:
+          name: Save latest build number
+          command: echo $CIRCLE_BUILD_NUM > spark-worker-build-num
+      - save_cache:
+          key: v1-docker-spark-worker-{{ .Revision }}-{{ .Branch }}
+          paths:
+            - spark-worker-build-num
+      - store_artifacts:
+          path: ~/docker-spark/spark-worker.tar
+          destination: /out/images/spark-worker.tar
+
   deploy:
     docker:
       - image: circleci/builder-base
@@ -93,13 +126,20 @@ jobs:
             - v1-docker-spark-master-{{ .Revision }}-{{ .Branch }}
             - v1-docker-spark-master-{{ .Revision }}
             - v1-docker-spark-master
+      - restore_cache:
+          keys:
+            - v1-docker-spark-worker-{{ .Revision }}-{{ .Branch }}
+            - v1-docker-spark-worker-{{ .Revision }}
+            - v1-docker-spark-worker
       - run:
           name: Download build artifacts
           command: |
             export SPARK_BASE_BUILD_NUM=$(cat spark-base-build-num)
             export SPARK_MASTER_BUILD_NUM=$(cat spark-master-build-num)
+            export SPARK_WORKER_BUILD_NUM=$(cat spark-worker-build-num)
             curl -# https://circleci.com/api/v1.1/project/github/VerdigrisTech/docker-spark/${SPARK_BASE_BUILD_NUM}/artifacts?circle-token=${CIRCLE_TOKEN} | grep -o 'https://[^"]*' > artifacts.txt
             curl -# https://circleci.com/api/v1.1/project/github/VerdigrisTech/docker-spark/${SPARK_MASTER_BUILD_NUM}/artifacts?circle-token=${CIRCLE_TOKEN} | grep -o 'https://[^"]*' >> artifacts.txt
+            curl -# https://circleci.com/api/v1.1/project/github/VerdigrisTech/docker-spark/${SPARK_WORKER_BUILD_NUM}/artifacts?circle-token=${CIRCLE_TOKEN} | grep -o 'https://[^"]*' >> artifacts.txt
             <artifacts.txt xargs -P4 -I % curl -#O %
       - run:
           name: Restore Docker images
@@ -122,7 +162,12 @@ workflows:
           context: common
           requires:
             - build_base
+      - build_worker:
+          context: common
+          requires:
+            - build_base
       - deploy:
           context: common
           requires:
             - build_master
+            - build_worker
